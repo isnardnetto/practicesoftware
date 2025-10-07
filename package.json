@@ -1,0 +1,30 @@
+{
+  "name": "automacao-playwright",
+  "version": "1.0.0",
+  "description": "Projeto de automação com Playwright para Practice Software Testing",
+  "main": "index.js",
+  "scripts": {
+    "test": "npx playwright test",
+    "test:headed": "npx playwright test --headed",
+    "test:debug": "npx playwright test --debug",
+    "test:ui": "npx playwright test --ui",
+    "codegen": "npx playwright codegen https://practicesoftwaretesting.com/",
+    "codegen:home": "npx playwright codegen https://practicesoftwaretesting.com/",
+    "codegen:login": "npx playwright codegen https://practicesoftwaretesting.com/auth/login",
+    "codegen:register": "npx playwright codegen https://practicesoftwaretesting.com/auth/register",
+    "install:browsers": "npx playwright install",
+    "report": "npx playwright show-report"
+  },
+  "keywords": [
+    "playwright",
+    "automation",
+    "testing",
+    "javascript"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.40.0"
+  },
+  "dependencies": {}
+}

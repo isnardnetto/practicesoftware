@@ -9,8 +9,6 @@
     "test:debug": "npx playwright test --debug",
     "test:ui": "npx playwright test --ui",
     "codegen": "npx playwright codegen https://practicesoftwaretesting.com/",
-    "codegen:home": "npx playwright codegen https://practicesoftwaretesting.com/",
-    "codegen:login": "npx playwright codegen https://practicesoftwaretesting.com/auth/login",
     "codegen:register": "npx playwright codegen https://practicesoftwaretesting.com/auth/register",
     "install:browsers": "npx playwright install",
     "report": "npx playwright show-report"

@@ -1,18 +1,14 @@
 # Projeto de Automação com Playwright
 
-Este é um projeto de automação de testes para o site [Practice Software Testing](https://practicesoftwaretesting.com/) usando Playwright e JavaScript.
+Este é um projeto de automação de testes para o site [Practice Software Testing](https://practicesoftwaretesting.com/) usando Playwright e JavaScript, focado especificamente em **testes de registro de usuários**.
 
 ## 📁 Estrutura do Projeto
 
 ```
 AutomacaoPW/
 ├── page-objects/           # Page Objects (Padrão de design)
-│   ├── HomePage.js        # Página inicial
-│   ├── LoginPage.js       # Página de login
 │   └── RegisterPage.js    # Página de registro
 ├── tests/                 # Testes automatizados
-│   ├── homepage.spec.js   # Testes da página inicial
-│   ├── login.spec.js      # Testes de login
 │   └── register.spec.js   # Testes de registro
 ├── screenshots/           # Screenshots dos testes
 ├── test-results/         # Resultados dos testes
@@ -47,30 +43,71 @@ AutomacaoPW/
 
 ### Codegen (Geração de Código)
 
-- `npm run codegen` - Abre o codegen na página principal
-- `npm run codegen:home` - Abre o codegen na página inicial
-- `npm run codegen:login` - Abre o codegen na página de login
+- `npm run codegen` - Abre o codegen na página de registro
 - `npm run codegen:register` - Abre o codegen na página de registro
 
 ### Relatórios
 
 - `npm run report` - Abre o relatório HTML dos testes
 
-## 🧪 Executando Testes
+## 🧪 Executando Testes de Registro
 
-### Executar todos os testes:
-
-```bash
-npm test
-```
-
-### Executar um arquivo específico:
+### Executar teste de registro:
 
 ```bash
-npx playwright test tests/login.spec.js
+npm test register.spec.js
 ```
 
-### Executar testes com interface gráfica:
+### Executar teste com interface gráfica:
+
+```bash
+npx playwright test register.spec.js --headed
+```
+
+### Executar teste em modo debug:
+
+```bash
+npx playwright test register.spec.js --debug
+```
+
+### Executar teste em navegador específico:
+
+```bash
+npx playwright test register.spec.js --project=chromium --headed
+npx playwright test register.spec.js --project=firefox --headed
+npx playwright test register.spec.js --project=webkit --headed
+```
+
+## 🌐 Execução Multi-Navegador
+
+Este projeto executa testes em **múltiplos navegadores** automaticamente:
+
+### Navegadores Suportados:
+
+- **Chromium** (Chrome, Edge)
+- **Firefox**
+- **WebKit** (Safari)
+
+### Comando para executar em todos os navegadores:
+
+```bash
+npx playwright test register.spec.js --headed
+```
+
+Este comando executará o teste de registro em todos os navegadores configurados, permitindo visualizar o comportamento em cada um deles.
+
+### Executar em navegador específico:
+
+```bash
+# Apenas Chrome/Chromium
+npx playwright test register.spec.js --project=chromium --headed
+
+# Apenas Firefox
+npx playwright test register.spec.js --project=firefox --headed
+
+# Apenas Safari/WebKit
+npx playwright test register.spec.js --project=webkit --headed
+```
 
 ```bash
 npm run test:headed
@@ -84,85 +121,125 @@ npm run test:debug
 
 ## 🔧 Usando o Codegen
 
-O Playwright Codegen é uma ferramenta que gera código automaticamente baseado nas suas interações com o site:
+O Playwright Codegen gera código automaticamente para a página de registro:
 
 ```bash
-# Para a página principal
-npm run codegen
-
-# Para página de login
-npm run codegen:login
-
 # Para página de registro
-npm run codegen:register
+npm run codegen
 ```
 
-## 📱 Page Objects
+## 📱 Page Object - RegisterPage
 
-Este projeto usa o padrão Page Object Model para organizar o código:
-
-### HomePage.js
-
-- Navegação pela página inicial
-- Busca de produtos
-- Filtros e categorias
-- Navegação para login/registro
-
-### LoginPage.js
-
-- Processo de login
-- Validações de campos
-- Tratamento de erros
-- Navegação entre páginas
+O projeto utiliza apenas a **RegisterPage** que contém:
 
 ### RegisterPage.js
 
-- Processo de registro
-- Preenchimento de formulários
-- Validações de dados
-- Seleção de país
+- **Processo de registro completo**
+- **Preenchimento de formulários**
+- **Validações de dados**
+- **Seleção de país**
+- **Geração de dados únicos**
+
+### Exemplo de uso:
+
+```javascript
+import { test, expect } from "@playwright/test";
+import { RegisterPage } from "../page-objects/RegisterPage.js";
+
+test("Register user with real data", async ({ page }) => {
+  const registerPage = new RegisterPage(page);
+  await page.goto("https://practicesoftwaretesting.com/auth/register");
+
+  const timestamp = Date.now();
+
+  await registerPage.registerData(
+    "João", // Nome
+    "Silva", // Sobrenome
+    "1990-05-15", // Data nascimento
+    "Rua das Flores, 123", // Endereço
+    "12345-678", // CEP
+    "São Paulo", // Cidade
+    "SP", // Estado
+    "11999999999", // Telefone
+    `joao.silva${timestamp}@email.com`, // Email único
+    `MinhaSenh${timestamp}@123` // Senha única
+  );
+
+  await registerPage.registerButton();
+
+  // Validação do registro
+  await expect(page).toHaveURL(/login/);
+});
+```
 
 ## 🖼️ Screenshots
 
 Os screenshots são automaticamente capturados:
 
 - Durante falhas nos testes
-- Quando chamado explicitamente nos Page Objects
 - Salvos na pasta `screenshots/`
+- Organizados por navegador
 
-## 📊 Relatórios
+## 📊 Relatórios Multi-Navegador
 
-Os relatórios são gerados automaticamente:
+Os relatórios mostram resultados para todos os navegadores:
 
-- Relatório HTML detalhado
-- Traces para debugging
-- Vídeos em caso de falha
-- Screenshots em caso de erro
+- **Relatório HTML** com comparação entre navegadores
+- **Traces** individuais por navegador
+- **Screenshots** específicos de cada navegador
+- **Vídeos** em caso de falha
 
-## 🌐 Navegadores Suportados
+## ⚙️ Configurações Multi-Navegador
 
-- **Desktop:** Chrome, Firefox, Safari, Edge
-- **Mobile:** Chrome Mobile, Safari Mobile
+As configurações no `playwright.config.js` incluem:
 
-## ⚙️ Configurações
+```javascript
+export default {
+  projects: [
+    { name: "chromium", use: { ...devices["Desktop Chrome"] } },
+    { name: "firefox", use: { ...devices["Desktop Firefox"] } },
+    { name: "webkit", use: { ...devices["Desktop Safari"] } },
+  ],
+};
+```
 
-As configurações do Playwright estão no arquivo `playwright.config.js`:
+## 🔍 Debugging Multi-Navegador
 
-- Timeout de ações: 30 segundos
-- Retry em caso de falha: 2 tentativas
-- Screenshot em falhas: Habilitado
-- Vídeo em falhas: Habilitado
-- Trace em retry: Habilitado
+Para debug específico por navegador:
 
-## 🔍 Debugging
+```bash
+# Debug no Chrome
+npx playwright test register.spec.js --project=chromium --debug
 
-Para fazer debug dos testes:
+# Debug no Firefox
+npx playwright test register.spec.js --project=firefox --debug
 
-1. **Modo Debug:**
+# Debug no Safari
+npx playwright test register.spec.js --project=webkit --debug
+```
 
-   ```bash
-   npm run test:debug
-   ```
+## 🧪 Teste de Registro
+
+O projeto contém **apenas um teste principal**:
+
+### Funcionalidades testadas:
+
+- ✅ **Preenchimento completo** do formulário de registro
+- ✅ **Dados únicos** gerados automaticamente (email e senha)
+- ✅ **Validação** de redirecionamento após registro
+- ✅ **Compatibilidade** entre navegadores
+- ✅ **Screenshots** automáticos em falhas
+
+### Dados de teste gerados:
+
+- **Email único**: `joao.silva{timestamp}@email.com`
+- **Senha única**: `MinhaSenh{timestamp}@123`
+- **Dados pessoais**: Nome, endereço, telefone fixos
+- **País**: Brasil (selecionado automaticamente)
+
+  ```bash
+  npm run test:debug
+  ```
 
 2. **UI Mode:**
 
@@ -205,21 +282,23 @@ test("should search for products", async ({ page }) => {
 
 ## 📞 Site de Teste
 
-Este projeto foi desenvolvido para testar o site:
-**[Practice Software Testing](https://practicesoftwaretesting.com/)**
+**[Practice Software Testing - Registro](https://practicesoftwaretesting.com/auth/register)**
 
-- Site de demonstração para práticas de automação
-- Funcionalidades completas de e-commerce
-- Dados de teste disponíveis
+- Formulário completo de registro
+- Validações em tempo real
+- Dados persistidos no sistema
 - Ambiente estável para automação
 
-## 🔐 Credenciais de Teste
+## � Execução Rápida
 
-Para testes de login, use as credenciais padrão:
+```bash
+# Executar teste de registro com visualização
+npx playwright test register.spec.js --headed
 
-- **Email:** customer@practicesoftwaretesting.com
-- **Senha:** welcome01
+# Executar em todos os navegadores
+npx playwright test register.spec.js --headed --project=chromium --project=firefox --project=webkit
+```
 
 ---
 
-**Desenvolvido para automação de testes com Playwright e JavaScript** 🎭
+**Automação de Registro Multi-Navegador com Playwright e JavaScript** 🎭 📝 🌐
